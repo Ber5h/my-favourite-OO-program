@@ -9,7 +9,7 @@ namespace _помогите_
 
     enum Cards
     {
-        Шестерка = 6, Семерка,
+        Шестерка, Семерка,
         Восьмерка, Девятка, Десятка, Валет, Дама, Король, Туз
     }
     class Program
@@ -21,7 +21,7 @@ namespace _помогите_
         }
     }
     class Card //вроде даже все написал
-    {
+    {/*короче нужно записывать сюда карты, которые участвуют в войне в закрытую */
         private Cards[] deck;
         static Random rnd = new Random();
         public Card()
@@ -51,7 +51,7 @@ namespace _помогите_
                     a = rnd.Next(0, 8);
                 }
                 num_cards[a]--;
-                deck[i] = (Cards)(a + 6);
+                deck[i] = (Cards)(a);
             }
         }
         public Cards[] Deck
@@ -63,9 +63,18 @@ namespace _помогите_
         }
         public void Add_card(int i, Player player1)
         {
-            Cards[] helpless_mas =  { deck[i] };
+            Cards[] helpless_mas = { deck[i] };
             player1.Deck = helpless_mas;
             deck[i] = 0;
+        }
+        public void War(Cards[] deck_war)
+        {
+            int i = 0;
+            foreach (int x in deck_war)
+            {
+                deck[i] = x;
+                i++;
+            }
         }
     }
     class Player
@@ -73,22 +82,22 @@ namespace _помогите_
         private Cards[] deck;
         public Player()
         {
-            deck = new Cards[18];
+            deck = new Cards[36];
             //могу себе позволить творить все, что угодно, поэтому буду добавлять карты игроку не здесь
         }
-        public Cards[] Deck 
+        public Cards[] Deck //будет вызываться в Main'е
         {
             set
             {
                 Redact_deck(value[0]/*обожаю извращения*/, I);
-                
+
             }
             get
             {
                 return deck;
             }
         }
-        
+
         private void Redact_deck(Cards card, int i)
         {
             deck[i] = card;
@@ -103,7 +112,7 @@ namespace _помогите_
                     if (x == 0) return i;
                     i++;
                 }
-                return 18;
+                return 36;
             }
         }
         public bool Fullness //мб и не нужно это, но пусть будет
@@ -132,9 +141,10 @@ namespace _помогите_
         //    int i = 0;
         //    foreach (Cards x in deck)
         //    {
-        //        if (x!=0) 
+        //        if (x!=0)
         //    }
         //}
-   }
+    }
 }
+
 
