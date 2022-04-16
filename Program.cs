@@ -61,6 +61,18 @@ namespace _помогите_
                 return deck;
             }
         }
+        public int Num_cards
+        {
+            get
+            {
+                int i = 0;
+                foreach (Cards x in deck)
+                {
+                    if (x != 0) i++;
+                }
+                return i;
+            }
+        }
         public void Add_card(int i, Player player1)
         {
             Cards[] helpless_mas = { deck[i] };
@@ -69,7 +81,7 @@ namespace _помогите_
         }
         public void War(Cards[] deck_war) //на время войны вводит в колоду карты, которые участвуют в войне
         {
-            int i = 0;
+            int i = Num_cards;
             foreach (Cards x in deck_war)
             {
                 deck[i] = x;
@@ -85,7 +97,7 @@ namespace _помогите_
             deck = new Cards[36];
             //могу себе позволить творить все, что угодно, поэтому буду добавлять карты игроку не здесь
         }
-        public Cards[] Deck 
+        public Cards[] Deck
         {
             set
             {
@@ -115,7 +127,7 @@ namespace _помогите_
                 return 36;
             }
         }
-       
+
         public int Num_cards
         {
             get
@@ -128,40 +140,48 @@ namespace _помогите_
                 return i;
             }
         }
-        public static void Compare (Player player1, Player player2)
+        public static void Compare(Player player1, Player player2, Card deck)
         {
             Cards a2_temp = player2[0];
             Cards a1_temp = player1[0];
+            //все я правильно делаю, потом чисто из колоды добавить тому, кто крутой
             if (a1_temp > a2_temp)
             {
-               
-                player2[0] = 0;
-                Shift(-1, new Cards[0], player2.deck);
-                
-                player1[0] = 0;
-                Cards[] mas_temp = { a1_temp, a2_temp }; //АХАХХАХАХХАХАХА
-                Shift(1, mas_temp, player1.deck);
+                    player2[0] = 0;
+                    Shift(1, player2.deck);
+
+                    player1[0] = 0;
+                    Cards[] mas_temp = { a1_temp, a2_temp }; //АХАХХАХАХХАХАХА
+                    Shift(1, mas_temp, player1.deck);
+                Shift(deck.Num_cards, deck.Deck, player1.deck);
             }
-            else if (a2_temp>a1_temp)
+            else if (a2_temp > a1_temp)
             {
                 player1[0] = 0;
-                Shift(-1, new Cards[0], player1.deck);
+                Shift(1, player1.deck);
                 player2[0] = 0;
                 Cards[] mas_temp = { a2_temp, a1_temp };
                 Shift(1, mas_temp, player2.deck);
+                Shift(deck.Num_cards, deck.Deck, player2.deck);
             }
             else
             {
-
+                //о нет
+                //ААААА ТОЛЬКО НЕ ЭТО
+                //Helpme
+                deck.War(new Cards[] { player1[0], player1[1], player2[0], player2[1] });
+                Shift(2, player1.deck);
+                Shift(2, player2.deck);
             }
         }
+        //я не понимаю, как мой код работает, но вроде бы мне ток Main остался
         private static Cards[] Shift(int a, Cards[] add_mas, Cards[] deck)//a - длина изменений
         {
             Cards[] mas_temp = new Cards[deck.Length + a];
             int i = 0;
             foreach (Cards x in deck)
             {
-                if (x!=0)
+                if (x != 0)
                 {
                     try
                     {
@@ -173,7 +193,7 @@ namespace _помогите_
                     }
                     i++;
                 }
-                
+
             }
             foreach (Cards x in add_mas)
             {
@@ -181,6 +201,18 @@ namespace _помогите_
                 i++;
             }
             return mas_temp;
+        }
+        // я хотел перегрузить Shift, вспомнил
+        private static Cards[] Shift (int a,Cards[] deck)
+        {
+            Cards[] mas = new Cards[deck.Length - a];
+            int j = 0;
+            for (int i = a; i<deck.Length; i++)
+            {
+                mas[j] = deck[i];
+                j++;
+            }
+            return mas;
         }
         //public static bool operator > (Player obj1, Player obj2)
         //{
@@ -191,15 +223,15 @@ namespace _помогите_
         //    return ((int)obj1.deck[0] < (int)obj2.deck[0]);
         //}
         //равно будет в виде else
-        public static bool operator true (Player obj1)
+        public static bool operator true(Player obj1)
         {
             return (obj1.Num_cards > 0);
         }
-        public static bool operator false (Player obj1)
+        public static bool operator false(Player obj1)
         {
             return (obj1.Num_cards == 0);
         }
-        public Cards this [int i]
+        public Cards this[int i]
         {
             get
             {
@@ -211,7 +243,7 @@ namespace _помогите_
                 foreach (Cards x in deck)
                 {
                     if (x == value) n++;
-                    
+
                 }
                 if (n == 4)
                 {
