@@ -9,15 +9,68 @@ namespace _помогите_
 
     enum Cards
     {
-        Шестерка = 1, Семерка,
+        Шестерка = 1, Семерка, //мб с 0 начинать, я не помню, как код работает
         Восьмерка, Девятка, Десятка, Валет, Дама, Король, Туз
     }
     class Program
     {
+        public static void War (Player player1, Player player2, Card deck)
+        {
+            Console.WriteLine("Война капсом");
+            Console.WriteLine("Игроки выложили по карте в закрытую");
+            if (player1 & player2) Compare(player1, player2, deck);
+            else
+            {
+                Console.WriteLine("Карты закончились");
+                End(player1, player2);
+            }
+        }
+        static void End (Player player1, Player player2)
+        {
+            if (player1) Console.WriteLine("Победил первый игрок");
+            else Console.WriteLine("Победил второй игрок");
+            //и отсылает к меню
+        }
+        static void Compare (Player player1, Player player2, Card deck1)
+        {
+            Console.WriteLine("От первого игрока карта достоинства: {0}", player1[0]);
+            Console.WriteLine("От второго игрока карта достоинства: {0}", player2[0]);
+            Player.Compare(player1, player2, deck1);
+        }
+        public static void InterfaceForWar (Player player1, Player player2, Card deck)
+        {
+            //здесь проверка, есть ли карты в колоде
+            if (deck.Num_cards == 0)
+            {
+                Console.WriteLine();
+            }
+            else
+            {
+                for (int i = 0; i<deck.Num_cards; i++)
+                {
+                    Console.Write(",{0} ", deck[i]);
+                }
+            }
+        }
         static void Main(string[] args)
         {
             Card deck1 = new Card();
             deck1.Shuffle();
+            Player player1 = new Player();
+            Player player2 = new Player();
+            for (int i = 0; i<36; i++)
+            {
+                if (i % 2 == 0) player1.Deck = new Cards[] { deck1.Deck[i] }; //АХАХАХАХАХАХА
+                else player2.Deck = new Cards[] { deck1.Deck[i] };
+            }
+            while (player1 & player2)
+            {
+                Console.WriteLine("Следующий тур капсом");
+                Compare(player1, player2, deck1);
+            }
+            if (player1) Console.WriteLine("Победил первый игрок");
+            else Console.WriteLine("Победил второй игрок");
+            Console.ReadKey();
         }
     }
     class Card //вроде даже все написал
@@ -88,6 +141,13 @@ namespace _помогите_
                 i++;
             }
         }
+        public Cards this [int j]
+        {
+            get
+            {
+                return deck[j];
+            }
+        }
     }
     class Player
     {
@@ -140,6 +200,15 @@ namespace _помогите_
                 return i;
             }
         }
+        private static void Add_card (Player player1, Card deck)
+        {
+            int i = 0;
+            while (deck.Num_cards > 0)
+            {
+                i++;
+                deck.Add_card(i, player1);
+            }
+        }
         public static void Compare(Player player1, Player player2, Card deck)
         {
             Cards a2_temp = player2[0];
@@ -147,6 +216,9 @@ namespace _помогите_
             //все я правильно делаю, потом чисто из колоды добавить тому, кто крутой
             if (a1_temp > a2_temp)
             {
+                Console.Write("Первый игрок выиграл тур и получил {0}, {1}", player1[0], player2[0]);
+                Program.InterfaceForWar(player1, player2, deck);
+                Add_card(player1, deck);
                     player2[0] = 0;
                     Shift(1, player2.deck);
 
@@ -154,9 +226,13 @@ namespace _помогите_
                     Cards[] mas_temp = { a1_temp, a2_temp }; //АХАХХАХАХХАХАХА
                     Shift(1, mas_temp, player1.deck);
                 Shift(deck.Num_cards, deck.Deck, player1.deck);
+                
             }
             else if (a2_temp > a1_temp)
             {
+                Console.WriteLine("Второй игрок выиграл тур и получил {0} и {1}", player1[0], player2[0]);
+                Program.InterfaceForWar(player1, player2, deck);
+                Add_card(player2, deck);
                 player1[0] = 0;
                 Shift(1, player1.deck);
                 player2[0] = 0;
@@ -172,6 +248,7 @@ namespace _помогите_
                 deck.War(new Cards[] { player1[0], player1[1], player2[0], player2[1] });
                 Shift(2, player1.deck);
                 Shift(2, player2.deck);
+                
             }
         }
         //я не понимаю, как мой код работает, но вроде бы мне ток Main остался
@@ -231,6 +308,10 @@ namespace _помогите_
         {
             return (obj1.Num_cards == 0);
         }
+        public static bool operator & (Player obj1, Player obj2)
+        {
+            return (obj1.Num_cards > 0 & obj2.Num_cards > 0);
+        }
         public Cards this[int i]
         {
             get
@@ -257,5 +338,4 @@ namespace _помогите_
         }
     }
 }
-
 
