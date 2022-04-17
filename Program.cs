@@ -30,6 +30,7 @@ namespace _помогите_
             if (player1) Console.WriteLine("Победил первый игрок");
             else Console.WriteLine("Победил второй игрок");
             //и отсылает к меню
+            Menu();
         }
         static void Compare (Player player1, Player player2, Card deck1)
         {
@@ -48,28 +49,48 @@ namespace _помогите_
             {
                 for (int i = 0; i<deck.Num_cards; i++)
                 {
-                    Console.Write(",{0} ", deck[i]);
+                    Console.Write(", {0}", deck[i]);
                 }
+                Console.WriteLine();
             }
         }
-        static void Main(string[] args)
+        static void Game()
         {
             Card deck1 = new Card();
             deck1.Shuffle();
             Player player1 = new Player();
             Player player2 = new Player();
-            for (int i = 0; i<36; i++)
+            for (int i = 0; i < 36; i++)
             {
-                if (i % 2 == 0) player1.Deck = new Cards[] { deck1.Deck[i] }; //АХАХАХАХАХАХА
-                else player2.Deck = new Cards[] { deck1.Deck[i] };
+                if (i % 2 == 0) deck1.Add_card(i, player1);
+                else deck1.Add_card(i, player2);
             }
             while (player1 & player2)
             {
                 Console.WriteLine("Следующий тур капсом");
                 Compare(player1, player2, deck1);
             }
-            if (player1) Console.WriteLine("Победил первый игрок");
-            else Console.WriteLine("Победил второй игрок");
+            End(player1, player2);
+        }
+        static void Menu()
+        {
+            Console.WriteLine("Ну че, народ, погнали? (введите 1, если хотите начать игру)");
+            string a = Console.ReadLine();
+            if (a == "1") Game();
+            else if (a == "42")
+            {
+                Console.WriteLine("Анекдот: в дверь постучались 6 раз. 'Надо делать выводы,'- подумал Штирлиц");
+                Menu();
+                  }
+            else
+            {
+                Console.WriteLine("Тут нет интерфейса, просто введите 1 или выйдите из консоли");
+                Menu();
+            }
+        }
+        static void Main(string[] args)
+        {
+            Menu();
             Console.ReadKey();
         }
     }
@@ -98,13 +119,20 @@ namespace _помогите_
             int a;
             for (int i = 0; i < 36; i++)
             {
-                a = rnd.Next(1, 9);
-                while (num_cards[a] == 0)
+                a = rnd.Next(1, 10);
+                while (num_cards[a-1] == 0)
                 {
-                    a = rnd.Next(1, 9);
+                    a = rnd.Next(1, 10);
                 }
-                num_cards[a]--;
+                num_cards[a-1]--;
                 deck[i] = (Cards)(a);
+            }
+        }
+        public void Output ()
+        {
+            foreach (Cards x in deck)
+            {
+                Console.WriteLine(x);
             }
         }
         public Cards[] Deck
@@ -134,12 +162,15 @@ namespace _помогите_
         }
         public void War(Cards[] deck_war) //на время войны вводит в колоду карты, которые участвуют в войне
         {
+
             int i = Num_cards;
             foreach (Cards x in deck_war)
             {
                 deck[i] = x;
                 i++;
             }
+            
+            //тут все правильно
         }
         public Cards this [int j]
         {
@@ -161,7 +192,7 @@ namespace _помогите_
         {
             set
             {
-                Redact_deck(value[0], I);
+                Redact_deck(value[0], I); //АХАХАХХАХХА ПОМОГИТЕ
 
             }
             get
@@ -172,7 +203,15 @@ namespace _помогите_
 
         private void Redact_deck(Cards card, int i)
         {
-            deck[i] = card;
+            try
+            {
+                deck[i] = card;
+            }
+            catch
+            {
+                deck = Shift(1, deck);
+                Deck = new Cards[] { card };
+            }
         }
         public int I
         {
@@ -181,32 +220,22 @@ namespace _помогите_
                 int i = 0;
                 foreach (Cards x in deck)
                 {
-                    if (x == 0) return i;
+                    if ((int)x == 0) return i;
                     i++;
                 }
                 return 36;
             }
         }
 
-        public int Num_cards
-        {
-            get
-            {
-                int i = 0;
-                foreach (Cards x in deck)
-                {
-                    if (x != 0) i++;
-                }
-                return i;
-            }
-        }
+        
         private static void Add_card (Player player1, Card deck)
         {
             int i = 0;
             while (deck.Num_cards > 0)
             {
-                i++;
+               
                 deck.Add_card(i, player1);
+                i++;
             }
         }
         public static void Compare(Player player1, Player player2, Card deck)
@@ -220,25 +249,25 @@ namespace _помогите_
                 Program.InterfaceForWar(player1, player2, deck);
                 Add_card(player1, deck);
                     player2[0] = 0;
-                    Shift(1, player2.deck);
+                 player2.deck =   Shift(1, player2.deck);
 
                     player1[0] = 0;
                     Cards[] mas_temp = { a1_temp, a2_temp }; //АХАХХАХАХХАХАХА
-                    Shift(1, mas_temp, player1.deck);
-                Shift(deck.Num_cards, deck.Deck, player1.deck);
+                 player1.deck =    Shift(1, mas_temp, player1.deck);
+                player1.deck = Shift(deck.Num_cards, deck.Deck, player1.deck);
                 
             }
             else if (a2_temp > a1_temp)
             {
-                Console.WriteLine("Второй игрок выиграл тур и получил {0} и {1}", player1[0], player2[0]);
+                Console.Write("Второй игрок выиграл тур и получил {0}, {1}", player1[0], player2[0]);
                 Program.InterfaceForWar(player1, player2, deck);
                 Add_card(player2, deck);
                 player1[0] = 0;
-                Shift(1, player1.deck);
+               player1.deck =  Shift(1, player1.deck);
                 player2[0] = 0;
                 Cards[] mas_temp = { a2_temp, a1_temp };
-                Shift(1, mas_temp, player2.deck);
-                Shift(deck.Num_cards, deck.Deck, player2.deck);
+                player2.deck = Shift(1, mas_temp, player2.deck);
+                player2.deck = Shift(deck.Num_cards, deck.Deck, player2.deck);
             }
             else
             {
@@ -246,15 +275,16 @@ namespace _помогите_
                 //ААААА ТОЛЬКО НЕ ЭТО
                 //Helpme
                 deck.War(new Cards[] { player1[0], player1[1], player2[0], player2[1] });
-                Shift(2, player1.deck);
-                Shift(2, player2.deck);
-                
+               
+                player1.deck = Shift(2, player1.deck);
+                player2.deck = Shift(2, player2.deck);
+                Program.War(player1, player2, deck);
             }
         }
         //я не понимаю, как мой код работает, но вроде бы мне ток Main остался
         private static Cards[] Shift(int a, Cards[] add_mas, Cards[] deck)//a - длина изменений
         {
-            Cards[] mas_temp = new Cards[deck.Length + a];
+            Cards[] mas_temp = new Cards[36];
             int i = 0;
             foreach (Cards x in deck)
             {
@@ -274,17 +304,27 @@ namespace _помогите_
             }
             foreach (Cards x in add_mas)
             {
-                mas_temp[i] = x;
+                try
+                {
+                    mas_temp[i] = x;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    break;
+                }
                 i++;
             }
+            
             return mas_temp;
         }
         // я хотел перегрузить Shift, вспомнил
         private static Cards[] Shift (int a,Cards[] deck)
         {
-            Cards[] mas = new Cards[deck.Length - a];
+            
+                Cards[] mas = new Cards[36];
+            
             int j = 0;
-            for (int i = a; i<deck.Length; i++)
+            for (int i = a; i<deck.Length-a; i++)
             {
                 mas[j] = deck[i];
                 j++;
@@ -302,15 +342,15 @@ namespace _помогите_
         //равно будет в виде else
         public static bool operator true(Player obj1)
         {
-            return (obj1.Num_cards > 0);
+            return (obj1.I > 0);
         }
         public static bool operator false(Player obj1)
         {
-            return (obj1.Num_cards == 0);
+            return (obj1.I == 0);
         }
         public static bool operator & (Player obj1, Player obj2)
         {
-            return (obj1.Num_cards > 0 & obj2.Num_cards > 0);
+            return (obj1.I > 0 & obj2.I > 0);
         }
         public Cards this[int i]
         {
@@ -320,22 +360,8 @@ namespace _помогите_
             }
             set
             {
-                int n = 0;
-                foreach (Cards x in deck)
-                {
-                    if (x == value) n++;
-
-                }
-                if (n == 4)
-                {
-                    Console.WriteLine("Ошибка, ибо карта пятая");
-                }
-                else
-                {
-                    deck[i] = value;
-                }
+                deck[i] = value;
             }
         }
     }
 }
-
