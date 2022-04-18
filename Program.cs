@@ -14,7 +14,8 @@ namespace _помогите_
     }
     class Program
     {
-        public static void War (Player player1, Player player2, Card deck)
+        static public int n;
+        public static void War(Player player1, Player player2, Card deck)
         {
             Console.WriteLine("Война капсом");
             Console.WriteLine("Игроки выложили по карте в закрытую");
@@ -25,20 +26,21 @@ namespace _помогите_
                 End(player1, player2);
             }
         }
-        static void End (Player player1, Player player2)
+        static void End(Player player1, Player player2)
         {
             if (player1) Console.WriteLine("Победил первый игрок");
             else Console.WriteLine("Победил второй игрок");
+            Console.WriteLine("Игра закончилась за {0} ходов", n);
             //и отсылает к меню
             Menu();
         }
-        static void Compare (Player player1, Player player2, Card deck1)
+        static void Compare(Player player1, Player player2, Card deck1)
         {
             Console.WriteLine("От первого игрока карта достоинства: {0}", player1[0]);
             Console.WriteLine("От второго игрока карта достоинства: {0}", player2[0]);
             Player.Compare(player1, player2, deck1);
         }
-        public static void InterfaceForWar (Player player1, Player player2, Card deck)
+        public static void InterfaceForWar(Player player1, Player player2, Card deck)
         {
             //здесь проверка, есть ли карты в колоде
             if (deck.Num_cards == 0)
@@ -47,7 +49,7 @@ namespace _помогите_
             }
             else
             {
-                for (int i = 0; i<deck.Num_cards; i++)
+                for (int i = 0; i < deck.Num_cards; i++)
                 {
                     Console.Write(", {0}", deck[i]);
                 }
@@ -56,6 +58,7 @@ namespace _помогите_
         }
         static void Game()
         {
+            n = 0;
             Card deck1 = new Card();
             deck1.Shuffle();
             Player player1 = new Player();
@@ -65,6 +68,7 @@ namespace _помогите_
                 if (i % 2 == 0) deck1.Add_card(i, player1);
                 else deck1.Add_card(i, player2);
             }
+            
             while (player1 & player2)
             {
                 Console.WriteLine("Следующий тур капсом");
@@ -81,7 +85,7 @@ namespace _помогите_
             {
                 Console.WriteLine("Анекдот: в дверь постучались 6 раз. 'Надо делать выводы,'- подумал Штирлиц");
                 Menu();
-                  }
+            }
             else
             {
                 Console.WriteLine("Тут нет интерфейса, просто введите 1 или выйдите из консоли");
@@ -120,15 +124,15 @@ namespace _помогите_
             for (int i = 0; i < 36; i++)
             {
                 a = rnd.Next(1, 10);
-                while (num_cards[a-1] == 0)
+                while (num_cards[a - 1] == 0)
                 {
                     a = rnd.Next(1, 10);
                 }
-                num_cards[a-1]--;
+                num_cards[a - 1]--;
                 deck[i] = (Cards)(a);
             }
         }
-        public void Output ()
+        public void Output()
         {
             foreach (Cards x in deck)
             {
@@ -169,10 +173,10 @@ namespace _помогите_
                 deck[i] = x;
                 i++;
             }
-            
+
             //тут все правильно
         }
-        public Cards this [int j]
+        public Cards this[int j]
         {
             get
             {
@@ -227,19 +231,20 @@ namespace _помогите_
             }
         }
 
-        
-        private static void Add_card (Player player1, Card deck)
+
+        private static void Add_card(Player player1, Card deck)
         {
             int i = 0;
             while (deck.Num_cards > 0)
             {
-               
+
                 deck.Add_card(i, player1);
                 i++;
             }
         }
         public static void Compare(Player player1, Player player2, Card deck)
         {
+            Program.n++;
             Cards a2_temp = player2[0];
             Cards a1_temp = player1[0];
             //все я правильно делаю, потом чисто из колоды добавить тому, кто крутой
@@ -248,14 +253,14 @@ namespace _помогите_
                 Console.Write("Первый игрок выиграл тур и получил {0}, {1}", player1[0], player2[0]);
                 Program.InterfaceForWar(player1, player2, deck);
                 Add_card(player1, deck);
-                    player2[0] = 0;
-                 player2.deck =   Shift(1, player2.deck);
+                player2[0] = 0;
+                player2.deck = Shift(1, player2.deck);
 
-                    player1[0] = 0;
-                    Cards[] mas_temp = { a1_temp, a2_temp }; //АХАХХАХАХХАХАХА
-                 player1.deck =    Shift(1, mas_temp, player1.deck);
+                player1[0] = 0;
+                Cards[] mas_temp = { a1_temp, a2_temp }; //АХАХХАХАХХАХАХА
+                player1.deck = Shift(1, mas_temp, player1.deck);
                 player1.deck = Shift(deck.Num_cards, deck.Deck, player1.deck);
-                
+
             }
             else if (a2_temp > a1_temp)
             {
@@ -263,7 +268,7 @@ namespace _помогите_
                 Program.InterfaceForWar(player1, player2, deck);
                 Add_card(player2, deck);
                 player1[0] = 0;
-               player1.deck =  Shift(1, player1.deck);
+                player1.deck = Shift(1, player1.deck);
                 player2[0] = 0;
                 Cards[] mas_temp = { a2_temp, a1_temp };
                 player2.deck = Shift(1, mas_temp, player2.deck);
@@ -275,7 +280,7 @@ namespace _помогите_
                 //ААААА ТОЛЬКО НЕ ЭТО
                 //Helpme
                 deck.War(new Cards[] { player1[0], player1[1], player2[0], player2[1] });
-               
+
                 player1.deck = Shift(2, player1.deck);
                 player2.deck = Shift(2, player2.deck);
                 Program.War(player1, player2, deck);
@@ -314,17 +319,17 @@ namespace _помогите_
                 }
                 i++;
             }
-            
+
             return mas_temp;
         }
         // я хотел перегрузить Shift, вспомнил
-        private static Cards[] Shift (int a,Cards[] deck)
+        private static Cards[] Shift(int a, Cards[] deck)
         {
-            
-                Cards[] mas = new Cards[36];
-            
+
+            Cards[] mas = new Cards[36];
+
             int j = 0;
-            for (int i = a; i<deck.Length-a; i++)
+            for (int i = a; i < deck.Length - a; i++)
             {
                 mas[j] = deck[i];
                 j++;
@@ -348,7 +353,7 @@ namespace _помогите_
         {
             return (obj1.I == 0);
         }
-        public static bool operator & (Player obj1, Player obj2)
+        public static bool operator &(Player obj1, Player obj2)
         {
             return (obj1.I > 0 & obj2.I > 0);
         }
